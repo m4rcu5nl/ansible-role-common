@@ -1,38 +1,58 @@
-Role Name
-=========
+Common
+======
+Ansible role for some basic tasks suitable for pretty much every (new) server.
 
-A brief description of the role goes here.
+* Set the hostname
+* Set the timezone
+* Install some packages*
+* Add custom group(s)
+* Configure sudoers for custom group(s)
+* Add user(s)
 
-Requirements
-------------
+\* Packages should be in distros default repo (or Epel on CentOS)
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
-
-Role Variables
+Role variables
 --------------
+- - - - - - - 
+### common_hostname
+The variable name should be self-explanatory.    
+Default: Extracts value from `{{ inventory_hostname }}`
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+### common_timezone
+The variable name should be self-explanatory.    
+Default: Europe/Amsterdam
 
-Dependencies
-------------
+### common_locale
+Generate locale. (I mainly added this to prevent Ubuntu servers from nagging about it)    
+Default: en_EN.UTF-8
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+### common_packages
+A list of packages and their state. On CentOS hosts the epel repo will be installed before the packages you list here.     
+Example:
 
-Example Playbook
-----------------
+    ---
+    common_packages:
+      - { name: 'vim', state: 'present' }
+      - { name: 'tmux', state: 'present' }
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Default: Will install Vim. It doesn't hurt to have a decent editor around.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+### common_groups
+A list of groups to be added and their respective sudoers entry.    
+Example:
 
-License
--------
+    ---
+    common_groups:
+      - { name: 'superheroes', state: 'present', sudoers: 'ALL=(ALL) NOPASSWD: ALL' }
 
-BSD
+Default: **None** (e.g.: will fail if you do not set this!)
 
-Author Information
-------------------
+### common_users
+A list of dicts containing the username, groups, state, default shell and ssh\_authorized\_key for each user. If any of your users is not using /bin/bash as their default shell, don't forget to add said shell to _common\_packages_.    
+Example:
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+    ---
+    common_users:
+      - { name: 'batman', groups: 'superheroes', state: 'present', shell: '/bin/bash', sshkey: 'https://m4rcu5.keybase.pub/.ssh/marcus.pub' }
+
+Default: **None** (e.g.: will fail if you do not set this!)
