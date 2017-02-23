@@ -1,0 +1,82 @@
+---
+# tasks file for common
+- block: # Install packages
+  - name: Add Epel repository
+    when: ansible_distribution == "CentOS"
+    package:
+      name: epel-release
+      state: present
+    register: epelinstall
+
+  - name: Install some general useful packages
+    package:
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+    with_items: "{{ common_packages }}"
+    when: (epelinstall|succeeded) or (epelinstall|skipped)
+    
+  become: yes
+  tags: packages
+
+- block: # Set basic host information 
+
+  - name: "Set hostname"
+    hostname: 
+      name: "{{ common_hostname }}"
+    tags: hostname
+  
+  - name: "Set timezone"
+    timezone: 
+      name: "{{ common_timezone }}"
+    tags: timezone
+  
+  - name: "locale settings"
+    locale_gen:
+      name: "{{ common_locale }}"
+      state: present
+    when: ansible_distribution == "Ubuntu"
+    tags: locale
+
+  tags: configure
+  become: yes
+
+- block: # Configure groups 
+  
+  - name: Add custom groups
+    group: 
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+    with_items: "{{ common_groups }}"
+  
+  - name: Configure sudoers
+    template:
+      src: sudoers.j2
+      dest: /etc/sudoers.d/{{ item.name }}
+      validate: 'visudo -cf %s'
+    with_items: "{{ common_groups }}"
+  
+  become: yes
+  tags: groups
+  no_log: True
+
+- block: # Configure users
+  
+  - name: Add users
+    user: 
+      name: "{{ item.name }}"
+      shell: "{{ item.shell }}"
+      state: "{{ item.state }}"
+      groups: "{{ item.groups }}"
+      append: yes
+    with_items: "{{ common_users }}"
+    
+  - name: Add authorized keys
+    authorized_key: 
+      user: "{{ item.name }}"
+      key: "{{ item.sshkey }}"
+    with_items: "{{ common_users }}"
+    when: not ansible_check_mode
+  
+  become: yes
+  tags: users
+  no_log: True
