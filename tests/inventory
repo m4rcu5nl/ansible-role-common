@@ -1,1 +1,1 @@
-localhost
+testhost ansible_host=127.0.0.1 #Change this to an IP address you can actually test on
