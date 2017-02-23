@@ -13,7 +13,6 @@ Ansible role for some basic tasks suitable for pretty much every (new) server.
 
 Role variables
 --------------
-- - - - - - - 
 ### common_hostname
 The variable name should be self-explanatory.    
 Default: Extracts value from `{{ inventory_hostname }}`
