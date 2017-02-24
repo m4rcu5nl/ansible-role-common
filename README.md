@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/m4rcu5nl/ansible-role-common.svg?branch=master)](https://travis-ci.org/m4rcu5nl/ansible-role-common)
+
 Common
 ======
 Ansible role for some basic tasks suitable for pretty much every (new) server.
@@ -9,8 +11,8 @@ Ansible role for some basic tasks suitable for pretty much every (new) server.
 * Configure sudoers for custom group(s)
 * Add user(s)
 
-\* Packages should be in distros default repo (or Epel on CentOS)
-
+\* Packages should be in distros default repo (or Epel on CentOS)    
+    
 Role variables
 --------------
 ### common_hostname
