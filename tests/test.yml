@@ -1,8 +1,8 @@
 ---
-- hosts: testhost
+- hosts: localhost
   remote_user: root
   roles:
-    - { role: common }
+    - ansible-role-common
 
   vars:
     common_users: 
