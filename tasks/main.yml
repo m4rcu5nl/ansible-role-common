@@ -30,12 +30,6 @@
       name: "{{ common_timezone }}"
     tags: timezone
   
-  - name: "locale settings"
-    locale_gen:
-      name: "{{ common_locale }}"
-      state: present
-    when: ansible_distribution == "Ubuntu"
-    tags: locale
 
   tags: configure
   become: yes

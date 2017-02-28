@@ -2,6 +2,5 @@
 # defaults file for common
 common_timezone: Europe/Amsterdam
 common_hostname: "{{ inventory_hostname }}"
-common_locale: en_EN.UTF-8
 common_packages:
   - { name: 'vim', state: 'present' }
