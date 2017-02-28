@@ -1,61 +1,53 @@
 ---
 # tasks file for common
-- block: # Install packages
-  - name: Add Epel repository
-    when: ansible_distribution == "CentOS"
-    package:
-      name: epel-release
-      state: present
-    register: epelinstall
-
-  - name: Install some general useful packages
-    package:
-      name: "{{ item.name }}"
-      state: "{{ item.state }}"
-    with_items: "{{ common_packages }}"
-    when: (epelinstall|succeeded) or (epelinstall|skipped)
-    
-  become: yes
-  tags: packages
-
 - block: # Set basic host information 
 
-  - name: "Set hostname"
+  - name: 'Set hostname'
     hostname: 
       name: "{{ common_hostname }}"
-    tags: hostname
+    tags: 
+      - hostname
   
-  - name: "Set timezone"
+  - name: 'Set timezone'
     timezone: 
       name: "{{ common_timezone }}"
-    tags: timezone
+    tags: 
+      - timezone
   
+  tags: 
+    - configuration
+  become: True
+  become_user: root
 
-  tags: configure
-  become: yes
-
-- block: # Configure groups 
+- block: # Manage groups 
   
-  - name: Add custom groups
+  - name: 'Add custom groups'
     group: 
       name: "{{ item.name }}"
       state: "{{ item.state }}"
     with_items: "{{ common_groups }}"
+    when:
+      - common_groups is defined
   
-  - name: Configure sudoers
+  - name: 'Configure sudoers for groups'
     template:
       src: sudoers.j2
       dest: /etc/sudoers.d/{{ item.name }}
       validate: 'visudo -cf %s'
     with_items: "{{ common_groups }}"
+    when:
+      - common_groups is defined
   
-  become: yes
-  tags: groups
+  tags: 
+    - management
+    - groups
   no_log: True
+  become: True
+  become_user: root
 
-- block: # Configure users
+- block: # Manage users
   
-  - name: Add users
+  - name: 'Add users'
     user: 
       name: "{{ item.name }}"
       shell: "{{ item.shell }}"
@@ -63,14 +55,48 @@
       groups: "{{ item.groups }}"
       append: yes
     with_items: "{{ common_users }}"
+    when:
+      - common_users is defined
     
-  - name: Add authorized keys
+  - name: 'Add authorized keys'
     authorized_key: 
       user: "{{ item.name }}"
       key: "{{ item.sshkey }}"
     with_items: "{{ common_users }}"
-    when: not ansible_check_mode
+    when: 
+      - not ansible_check_mode
+      - common_users is defined
   
-  become: yes
-  tags: users
+  tags: 
+    - management
+    - users
   no_log: True
+  become: True
+  become_user: root
+
+- block: # Install Epel and common_packages if set
+  - name: 'Add Epel repository (the easy way)'
+    package:
+      name: epel-release
+      state: present
+    when: 
+      - ansible_distribution == "CentOS"
+      - ansible_distribution_major_version >= 6
+    tags:
+      - repositories
+
+  - name: 'Install some common packages'
+    package:
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+    with_items: "{{ common_packages }}"
+    when:
+      - common_packages is defined
+    tags: 
+      - packages
+    
+  tags: 
+    - installation
+  become: True
+  become_user: root
+
