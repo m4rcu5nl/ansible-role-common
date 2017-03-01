@@ -38,7 +38,7 @@
       validate: 'visudo -cf %s'
     with_items: "{{ common_groups }}"
     when:
-      - common_groups is defined
+      - item.sudoers is defined
     loop_control:
       label: "{{ item.name }}"
   
@@ -70,7 +70,7 @@
     with_items: "{{ common_users }}"
     when: 
       - not ansible_check_mode
-      - common_users is defined
+      - item.sshkey is defined
     loop_control:
       label: "{{ item.name }}"
   
