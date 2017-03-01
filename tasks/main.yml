@@ -98,6 +98,7 @@
     with_items: "{{ common_packages }}"
     when:
       - common_packages is defined
+      - not ansible_check_mode # check mode will fail if common_packages needs Epel
     loop_control:
       label: "{{ item.name }}"
     tags: 
