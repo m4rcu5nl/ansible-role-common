@@ -28,6 +28,8 @@
     with_items: "{{ common_groups }}"
     when:
       - common_groups is defined
+    loop_control:
+      label: "{{ item.name }}"
   
   - name: 'Configure sudoers for groups'
     template:
@@ -37,11 +39,12 @@
     with_items: "{{ common_groups }}"
     when:
       - common_groups is defined
+    loop_control:
+      label: "{{ item.name }}"
   
   tags: 
     - management
     - groups
-  no_log: True
   become: True
   become_user: root
 
@@ -57,6 +60,8 @@
     with_items: "{{ common_users }}"
     when:
       - common_users is defined
+    loop_control:
+      label: "{{ item.name }}"
     
   - name: 'Add authorized keys'
     authorized_key: 
@@ -66,11 +71,12 @@
     when: 
       - not ansible_check_mode
       - common_users is defined
+    loop_control:
+      label: "{{ item.name }}"
   
   tags: 
     - management
     - users
-  no_log: True
   become: True
   become_user: root
 
@@ -92,6 +98,8 @@
     with_items: "{{ common_packages }}"
     when:
       - common_packages is defined
+    loop_control:
+      label: "{{ item.name }}"
     tags: 
       - packages
     
