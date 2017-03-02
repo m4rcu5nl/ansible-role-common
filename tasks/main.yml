@@ -17,7 +17,6 @@
   tags: 
     - configuration
   become: True
-  become_user: root
 
 - block: # Install Epel and common_packages if set
   - name: 'Add Epel repository (the easy way)'
@@ -46,7 +45,6 @@
   tags: 
     - installation
   become: True
-  become_user: root
 
 - block: # Manage groups 
   
@@ -75,7 +73,6 @@
     - management
     - groups
   become: True
-  become_user: root
 
 - block: # Manage users
   
@@ -107,4 +104,3 @@
     - management
     - users
   become: True
-  become_user: root
