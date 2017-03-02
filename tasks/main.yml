@@ -19,6 +19,35 @@
   become: True
   become_user: root
 
+- block: # Install Epel and common_packages if set
+  - name: 'Add Epel repository (the easy way)'
+    package:
+      name: epel-release
+      state: present
+    when: 
+      - ansible_distribution == "CentOS"
+      - ansible_distribution_major_version >= 6
+    tags:
+      - repositories
+
+  - name: 'Install some common packages'
+    package:
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+    with_items: "{{ common_packages }}"
+    when:
+      - common_packages is defined
+      - not ansible_check_mode # check mode will fail if common_packages needs Epel
+    loop_control:
+      label: "{{ item.name }}"
+    tags: 
+      - packages
+    
+  tags: 
+    - installation
+  become: True
+  become_user: root
+
 - block: # Manage groups 
   
   - name: 'Add custom groups'
@@ -79,33 +108,3 @@
     - users
   become: True
   become_user: root
-
-- block: # Install Epel and common_packages if set
-  - name: 'Add Epel repository (the easy way)'
-    package:
-      name: epel-release
-      state: present
-    when: 
-      - ansible_distribution == "CentOS"
-      - ansible_distribution_major_version >= 6
-    tags:
-      - repositories
-
-  - name: 'Install some common packages'
-    package:
-      name: "{{ item.name }}"
-      state: "{{ item.state }}"
-    with_items: "{{ common_packages }}"
-    when:
-      - common_packages is defined
-      - not ansible_check_mode # check mode will fail if common_packages needs Epel
-    loop_control:
-      label: "{{ item.name }}"
-    tags: 
-      - packages
-    
-  tags: 
-    - installation
-  become: True
-  become_user: root
-
