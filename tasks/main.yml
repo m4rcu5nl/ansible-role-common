@@ -17,62 +17,6 @@
   tags: 
     - configuration
   become: True
-  become_user: root
-
-- block: # Manage groups 
-  
-  - name: 'Add custom groups'
-    group: 
-      name: "{{ item.name }}"
-      state: "{{ item.state }}"
-    with_items: "{{ common_groups }}"
-    when:
-      - common_groups is defined
-  
-  - name: 'Configure sudoers for groups'
-    template:
-      src: sudoers.j2
-      dest: /etc/sudoers.d/{{ item.name }}
-      validate: 'visudo -cf %s'
-    with_items: "{{ common_groups }}"
-    when:
-      - common_groups is defined
-  
-  tags: 
-    - management
-    - groups
-  no_log: True
-  become: True
-  become_user: root
-
-- block: # Manage users
-  
-  - name: 'Add users'
-    user: 
-      name: "{{ item.name }}"
-      shell: "{{ item.shell }}"
-      state: "{{ item.state }}"
-      groups: "{{ item.groups }}"
-      append: yes
-    with_items: "{{ common_users }}"
-    when:
-      - common_users is defined
-    
-  - name: 'Add authorized keys'
-    authorized_key: 
-      user: "{{ item.name }}"
-      key: "{{ item.sshkey }}"
-    with_items: "{{ common_users }}"
-    when: 
-      - not ansible_check_mode
-      - common_users is defined
-  
-  tags: 
-    - management
-    - users
-  no_log: True
-  become: True
-  become_user: root
 
 - block: # Install Epel and common_packages if set
   - name: 'Add Epel repository (the easy way)'
@@ -92,11 +36,71 @@
     with_items: "{{ common_packages }}"
     when:
       - common_packages is defined
+      - not ansible_check_mode # check mode will fail if common_packages needs Epel
+    loop_control:
+      label: "{{ item.name }}"
     tags: 
       - packages
     
   tags: 
     - installation
   become: True
-  become_user: root
 
+- block: # Manage groups 
+  
+  - name: 'Add custom groups'
+    group: 
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+    with_items: "{{ common_groups }}"
+    when:
+      - common_groups is defined
+    loop_control:
+      label: "{{ item.name }}"
+  
+  - name: 'Configure sudoers for groups'
+    template:
+      src: sudoers.j2
+      dest: /etc/sudoers.d/{{ item.name }}
+      validate: 'visudo -cf %s'
+    with_items: "{{ common_groups }}"
+    when:
+      - item.sudoers is defined
+    loop_control:
+      label: "{{ item.name }}"
+  
+  tags: 
+    - management
+    - groups
+  become: True
+
+- block: # Manage users
+  
+  - name: 'Add users'
+    user: 
+      name: "{{ item.name }}"
+      shell: "{{ item.shell | default('/bin/bash') }}"
+      state: "{{ item.state }}"
+      groups: "{{ item.groups | default('') }}"
+      append: yes
+    with_items: "{{ common_users }}"
+    when:
+      - common_users is defined
+    loop_control:
+      label: "{{ item.name }}"
+    
+  - name: 'Add authorized keys'
+    authorized_key: 
+      user: "{{ item.name }}"
+      key: "{{ item.sshkey }}"
+    with_items: "{{ common_users }}"
+    when: 
+      - not ansible_check_mode
+      - item.sshkey is defined
+    loop_control:
+      label: "{{ item.name }}"
+  
+  tags: 
+    - management
+    - users
+  become: True
