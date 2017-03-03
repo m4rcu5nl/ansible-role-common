@@ -57,7 +57,7 @@
       - common_groups is defined
     loop_control:
       label: "{{ item.name }}"
-  
+
   - name: 'Configure sudoers for groups'
     template:
       src: sudoers.j2
@@ -66,6 +66,17 @@
     with_items: "{{ common_groups }}"
     when:
       - item.sudoers is defined
+      - item.state == 'present'
+    loop_control:
+      label: "{{ item.name }}"
+
+  - name: 'Remove sudoers file for groups being removed'
+    file:
+      path: /etc/sudoers.d/{{ item.name }}
+      state: absent
+    with_items: "{{ common_groups }}"
+    when:
+      - item.state == 'absent'
     loop_control:
       label: "{{ item.name }}"
   
@@ -80,12 +91,25 @@
     user: 
       name: "{{ item.name }}"
       shell: "{{ item.shell | default('/bin/bash') }}"
-      state: "{{ item.state }}"
+      state: present
       groups: "{{ item.groups | default('') }}"
       append: yes
     with_items: "{{ common_users }}"
     when:
       - common_users is defined
+      - item.state == 'present'
+    loop_control:
+      label: "{{ item.name }}"
+
+  - name: 'Remove users'
+    user:
+      name: "{{ item.name }}"
+      state: absent
+      remove: "{{ item.remove | default('yes') }}"
+    with_items: "{{ common_users }}"
+    when:
+      - common_users is defined
+      - item.state == 'absent'
     loop_control:
       label: "{{ item.name }}"
     
@@ -97,6 +121,7 @@
     when: 
       - not ansible_check_mode
       - item.sshkey is defined
+      - item.state == 'present'
     loop_control:
       label: "{{ item.name }}"
   
