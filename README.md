@@ -6,6 +6,7 @@ Ansible role containing some common server config tasks.
 
 * Set the hostname
 * Set the timezone
+* Set resolving nameservers
 * Install some packages (optional)
 * Add custom group(s) (optional)
 * Configure sudoers for custom group(s) (optional)
@@ -22,6 +23,14 @@ Default: Extracts value from `{{ inventory_hostname }}`
 ### common_timezone
 The variable name should be self-explanatory.    
 Default: Europe/Amsterdam
+
+### common_resolvers
+A dictionary containing containing a primary and secondary resolving nameserver for your server. If not set or only 1 nameserver is given nothing will happen. Example below uses Google's public DNS servers
+
+    ---
+    common_resolvers:
+      primary: { addr: '8.8.8.8'}
+      secondary: { addr: '8.8.4.4'}
 
 ### common_packages
 A list of packages and their state. Packages should be in standard repo or Epel and require no additional configuration. Some good examples are Vim, Tmux, Fish, Git, etc..    
