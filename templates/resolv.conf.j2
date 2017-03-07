@@ -1,0 +1,4 @@
+{{ ansible_managed | comment }}
+
+nameserver {{ common_resolvers['primary'].addr }}
+nameserver {{ common_resolvers['secondary'].addr }}
