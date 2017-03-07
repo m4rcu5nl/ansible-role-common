@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/m4rcu5nl/ansible-role-common.svg?branch=master)](https://travis-ci.org/m4rcu5nl/ansible-role-common)
+[![Build Status](https://travis-ci.org/m4rcu5nl/ansible-role-common.svg?branch=master)](https://travis-ci.org/m4rcu5nl/ansible-role-common) [![GitHub issues](https://img.shields.io/github/issues/m4rcu5nl/ansible-role-common.svg)](https://github.com/m4rcu5nl/ansible-role-common/issues)
 
 Common
 ======
