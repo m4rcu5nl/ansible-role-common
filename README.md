@@ -6,7 +6,7 @@ Ansible role containing some common server config tasks.
 
 * Set the hostname
 * Set the timezone
-* Set resolving nameservers
+* Set resolving nameservers (optional)
 * Install some packages (optional)
 * Add custom group(s) (optional)
 * Configure sudoers for custom group(s) (optional)
