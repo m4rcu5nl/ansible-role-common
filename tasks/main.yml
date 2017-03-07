@@ -13,6 +13,17 @@
       name: "{{ common_timezone }}"
     tags: 
       - timezone
+
+  - name: Set resolving nameservers
+    template: 
+      src: resolv.conf.j2
+      dest: /etc/resolv.conf 
+      backup: yes
+    when:
+      - common_resolvers['primary'].addr is defined
+      - common_resolvers['secondary'].addr is defined
+    tags: 
+      - resolvers
   
   tags: 
     - configuration
