@@ -1,31 +1,31 @@
 ---
 # tasks file for common
-- block: # Set basic host information 
+- block: # Set basic host information
 
   - name: 'Set hostname'
-    hostname: 
+    hostname:
       name: "{{ common_hostname }}"
-    tags: 
+    tags:
       - hostname
-  
+
   - name: 'Set timezone'
-    timezone: 
+    timezone:
       name: "{{ common_timezone }}"
-    tags: 
+    tags:
       - timezone
 
   - name: Set resolving nameservers
-    template: 
+    template:
       src: resolv.conf.j2
-      dest: /etc/resolv.conf 
+      dest: /etc/resolv.conf
       backup: yes
     when:
       - common_resolvers['primary'].addr is defined
       - common_resolvers['secondary'].addr is defined
-    tags: 
+    tags:
       - resolvers
-  
-  tags: 
+
+  tags:
     - configuration
   become: True
 
@@ -34,7 +34,7 @@
     package:
       name: epel-release
       state: present
-    when: 
+    when:
       - ansible_distribution == "CentOS"
       - ansible_distribution_major_version >= 6
     tags:
@@ -50,17 +50,17 @@
       - not ansible_check_mode # check mode will fail if common_packages needs Epel
     loop_control:
       label: "{{ item.name }}"
-    tags: 
+    tags:
       - packages
-    
-  tags: 
+
+  tags:
     - installation
   become: True
 
-- block: # Manage groups 
-  
+- block: # Manage groups
+
   - name: 'Add custom groups'
-    group: 
+    group:
       name: "{{ item.name }}"
       state: "{{ item.state }}"
     with_items: "{{ common_groups }}"
@@ -90,16 +90,16 @@
       - item.state == 'absent'
     loop_control:
       label: "{{ item.name }}"
-  
-  tags: 
+
+  tags:
     - management
     - groups
   become: True
 
 - block: # Manage users
-  
+
   - name: 'Add users'
-    user: 
+    user:
       name: "{{ item.name }}"
       shell: "{{ item.shell | default('/bin/bash') }}"
       state: present
@@ -123,20 +123,20 @@
       - item.state == 'absent'
     loop_control:
       label: "{{ item.name }}"
-    
+
   - name: 'Add authorized keys'
-    authorized_key: 
+    authorized_key:
       user: "{{ item.name }}"
       key: "{{ item.sshkey }}"
     with_items: "{{ common_users }}"
-    when: 
+    when:
       - not ansible_check_mode
       - item.sshkey is defined
       - item.state == 'present'
     loop_control:
       label: "{{ item.name }}"
-  
-  tags: 
+
+  tags:
     - management
     - users
   become: True

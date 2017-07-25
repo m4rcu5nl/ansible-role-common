@@ -207,7 +207,7 @@ galaxy_info:
   #  - all
   #  - Any
 
-  galaxy_tags: 
+  galaxy_tags:
     - hostname
     - timezone
     - users
