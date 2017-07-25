@@ -5,9 +5,9 @@
     - ansible-role-common
 
   vars:
-    common_users: 
+    common_users:
       - { name: 'batman', groups: 'superheroes', state: 'present', shell: '/bin/bash', sshkey: 'https://m4rcu5.keybase.pub/.ssh/marcus.pub' }
-    common_groups: 
+    common_groups:
       - { name: 'superheroes', state: 'present', sudoers: 'ALL=(ALL) NOPASSWD: ALL' }
     common_packages:
       - { name: 'vim', state: 'present' }
