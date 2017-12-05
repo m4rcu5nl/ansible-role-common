@@ -1,5 +1,10 @@
 ---
 # tasks file for common
+- include_tasks: root_passwordstore.yml
+  when:
+    - setrootpass is defined
+    - setrootpass == 'True'
+
 - block: # Set basic host information
 
   - name: 'Set hostname'
