@@ -74,3 +74,11 @@ The shell defaults to '/bin/bash'. If you specify an alternative one here, don't
       - { name: 'robin', state: 'present', groups: 'sidekicks', sshkey: 'robinspublicsshkeyasastring' }
       - { name: 'johnd', state: 'present' }
 ```
+
+### setrootpass (optional and highly experimental)
+#### Requirements on host running Ansible:
+* pass ([passwordstore.org](https://www.passwordstore.org/))
+* pwgen
+* mkpasswd
+
+When this variable has value `True` (string) then a password and it's hash are generated and stored in the passwordstore on the host running this role. This newly generated password will be set as password for root on the remote host you run this role against. IF you leave this variable unset, the tasks will simply be skipped.
