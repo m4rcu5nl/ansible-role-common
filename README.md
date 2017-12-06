@@ -11,6 +11,7 @@ Ansible role containing some common server config tasks.
 * Add custom group(s) (optional)
 * Configure sudoers for custom group(s) (optional)
 * Add user(s) (optional)
+* Set host root password (optional, experimental)
 
 Current version is build for and tested on CentOS 7. Though apart from installing the Epel repository (which is wrapped in an `ansible_distribution` conditional) I don't see a reason why this role should not also work for Ubuntu/Debian, really.
 
@@ -81,4 +82,6 @@ The shell defaults to '/bin/bash'. If you specify an alternative one here, don't
 * pwgen
 * mkpasswd
 
-When this variable has value `True` (string) then a password and it's hash are generated and stored in the passwordstore on the host running this role. This newly generated password will be set as password for root on the remote host you run this role against. IF you leave this variable unset, the tasks will simply be skipped.
+This variable is empty by default to make sure the tasks will not be triggered unintentionally.
+
+Currently this variable can only be set to hold the value `passwordstore`. This will generate a password and it's hash and store it in the passwordstore on the host running this role. This newly generated password will be set as the root password on the remote host you run this role against.

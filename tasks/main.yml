@@ -1,9 +1,9 @@
 ---
 # tasks file for common
-- include_tasks: root_passwordstore.yml
+- include_tasks: rootpw_{{ setrootpass }}.yml
   when:
     - setrootpass is defined
-    - setrootpass == 'True'
+  #  - setrootpass == 'True'
   tags:
     - setrootpass
 
