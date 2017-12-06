@@ -4,6 +4,8 @@
   when:
     - setrootpass is defined
     - setrootpass == 'True'
+  tags:
+    - setrootpass
 
 - block: # Set basic host information
 
